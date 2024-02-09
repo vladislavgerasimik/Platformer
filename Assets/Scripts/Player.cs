@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
@@ -30,6 +31,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _shieldObject;
     private bool _inEnemi;
     private bool _isJump;
+
+    public event UnityAction _isDead;
 
     private void Awake()
     {
@@ -189,17 +192,17 @@ public class Player : MonoBehaviour
             _live -= 1;
             transform.position = _CheckPoint.transform.position;
             _liveScore.text = ($"Жизни: {_live}");
-
+            _isDead?.Invoke();
          
-        }
-        else if(_isShield == true && collision.TryGetComponent(out Enemies _enemies) && _live > 0)
-        {
-            _inEnemi = true;
-        }
+        }        
         if(_live == 0)
         {
             _endGame.SetActive(true);
             Time.timeScale = 0;
+        }
+        else if (_isShield == true && collision.TryGetComponent(out Enemies _enemies) && _live > 0)
+        {
+            _inEnemi = true;
         }
         if (collision.TryGetComponent(out CheckPoint checkpoint))
         {
@@ -249,6 +252,7 @@ public class Player : MonoBehaviour
             _live -= 1;
             transform.position = _CheckPoint.transform.position;
             _liveScore.text = ($"Жизни: {_live}");
+            _isDead?.Invoke();
 
 
         }

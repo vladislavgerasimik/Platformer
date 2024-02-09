@@ -5135,7 +5135,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9089224584690343794, guid: 3bb82a859578a9d4f9d97434dae96650, type: 3}
       propertyPath: _speed
-      value: 500
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 9089224584690343794, guid: 3bb82a859578a9d4f9d97434dae96650, type: 3}
       propertyPath: _isWork
@@ -5151,7 +5151,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9089224584690343807, guid: 3bb82a859578a9d4f9d97434dae96650, type: 3}
       propertyPath: m_Name
-      value: Mac 128 (1)
+      value: Boss
       objectReference: {fileID: 0}
     - target: {fileID: 9089224584690343807, guid: 3bb82a859578a9d4f9d97434dae96650, type: 3}
       propertyPath: m_Layer
@@ -16115,7 +16115,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1197448558}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: dfc01f69bd312004ca3751d7c2cca8df, type: 3}
@@ -22571,7 +22571,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971237013}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.6, y: -1.48, z: 0}
+  m_LocalPosition: {x: 77.24, y: 56.29, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -22590,7 +22590,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971237013}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ad6db9061f686b64e80d2b8e24bb9bfa, type: 3}
   m_Name: 
@@ -22661,7 +22661,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1971237013}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b93692259ffa34149b1cb631a274abe6, type: 3}
   m_Name: 
