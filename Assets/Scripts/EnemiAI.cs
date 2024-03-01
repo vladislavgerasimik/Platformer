@@ -13,14 +13,25 @@ public class EnemiAI : MonoBehaviour
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private bool _isWork = true;
     private Vector3 _startPosition;
-    
+
+    void OnEnable()
+    {
+        _startPosition = transform.position;
+        _player._isDead += Back;
+    }
+
+    void OnDisable()
+    {
+        _player._isDead -= Back;
+    }
+
     void Start()
     {
         _startPosition = transform.position;
     }
 
 
-    void Update()
+    void FixedUpdate()
     {
         if (_isWork == true)
         {
@@ -59,5 +70,14 @@ public class EnemiAI : MonoBehaviour
     public void WorkActivated()
     {
         _isWork = true;
+    }
+
+    private void Back()
+    {
+        Debug.Log(1);
+        transform.position = _startPosition;
+        _spriteRenderer.sprite = _disActiveSprite;
+        _rigidbody2D.velocity = Vector2.zero;
+        _isWork = false;
     }
 }

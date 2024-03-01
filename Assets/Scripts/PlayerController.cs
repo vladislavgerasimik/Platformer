@@ -22,10 +22,24 @@ public class PlayerController : MonoBehaviour
     private const float shellRadius = 0.01f;
 
     private bool _isMovementPlatform;
+    private Player player;
+
 
     void OnEnable()
-    {
+    {        
+        player = GetComponent<Player>();
+        player._isDead += TEST;
         _rigidbody2D = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnDisable()
+    {
+        player._isDead -= TEST;
+    }
+
+    private void TEST()
+    {
+        Debug.Log(111111);
     }
 
     void Start()
@@ -37,11 +51,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (_isMovementPlatform == false)
+       /* if (_isMovementPlatform == false)
             targetVelocity = new Vector2(Input.GetAxis("Horizontal") * 8, 0);
 
         if (Input.GetKey(KeyCode.Space) && grounded)
-            Velocity.y = _jumpPower;
+            Velocity.y = _jumpPower;*/
     }
 
     void FixedUpdate()

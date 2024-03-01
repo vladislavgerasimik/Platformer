@@ -7,7 +7,7 @@ public class EnemiBoss : MonoBehaviour
 
 
     [SerializeField] private float _targetDistance;
-    [SerializeField] private Player _player;
+    private Player _player;
     [SerializeField] private float _speed;
     [SerializeField] private Sprite _activeSprite;
     [SerializeField] private Sprite _disActiveSprite;
@@ -17,6 +17,7 @@ public class EnemiBoss : MonoBehaviour
 
     void OnEnable()
     {
+        _player = FindObjectOfType<Player>();
         _startPosition = transform.position;
         _player._isDead += Back;
     }
@@ -66,3 +67,4 @@ public class EnemiBoss : MonoBehaviour
 }
 
 
+//Подготовить Hub локацию

@@ -24,7 +24,9 @@ public class Player : MonoBehaviour
     [SerializeField] private TMP_Text _liveScore;
     [SerializeField] private GameObject _endGame;
     [SerializeField] private GameObject _endLevel;
-
+    [SerializeField] private bool _dubleJump;
+    [SerializeField] private int _jumpCount;
+    private int _CurrentJumpCount;
     private bool _isShield;
     [SerializeField] private float _timer;
     private float _timeShield = 10;
@@ -37,6 +39,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         //_physicsMaterial2D.friction = 0;
+        _CurrentJumpCount = _jumpCount;
     }
 
 
@@ -69,6 +72,10 @@ public class Player : MonoBehaviour
                 }
             }
         }
+      //if(_isJump == false)
+      //  {
+      //      _CurrentJumpCount = _jumpCount;
+      //  }
     }
 
 
@@ -89,7 +96,7 @@ public class Player : MonoBehaviour
              }
              else
              {
-                 _rigidbody.velocity = new Vector2(-_speed / 1.1f, _rigidbody.velocity.y);
+                 _rigidbody.velocity = new Vector2(-_speed * 1.1f, _rigidbody.velocity.y);
              }
 
             GetComponent<SpriteRenderer>().flipX = true;
@@ -134,7 +141,7 @@ public class Player : MonoBehaviour
             //ОБЪЯСНИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             if (_isJump == true)
             {
-                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.y);
+                _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
             }
             else if (hit.collider != null)
             {
@@ -152,12 +159,24 @@ public class Player : MonoBehaviour
 
     public void Jump()
     {
-        if(Input.GetKey(KeyCode.Space) && _isJump == false)
-        {            
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
-            _rigidbody.AddForce(Vector2.up * _jumpPower, ForceMode2D.Impulse);            
+        if (_dubleJump == false)
+        {
+            if (Input.GetKey(KeyCode.Space) && _isJump == false)
+            {            
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
+                _rigidbody.AddForce(Vector2.up * _jumpPower, ForceMode2D.Impulse);
+                
+            }
         }
-
+        if (_dubleJump == true)
+        {
+            if (Input.GetKeyDown(KeyCode.Space) && _CurrentJumpCount > 0)
+            {
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
+                _rigidbody.AddForce(Vector2.up * _jumpPower, ForceMode2D.Impulse);
+                _CurrentJumpCount -= 1;
+            }
+        }
         _animator.SetBool("isJump", _isJump);
     }
 
@@ -171,6 +190,7 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         _isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
+        
             
     }
 
@@ -188,7 +208,7 @@ public class Player : MonoBehaviour
         
         if (collision.TryGetComponent(out Enemies enemies) && _live > 0 && _isShield == false)
         {
-
+            _rigidbody.velocity = Vector2.zero;
             _live -= 1;
             transform.position = _CheckPoint.transform.position;
             _liveScore.text = ($"Жизни: {_live}");
@@ -260,12 +280,19 @@ public class Player : MonoBehaviour
         {
             _inEnemi = true;
         }
+        if (collision.collider.TryGetComponent(out CompositeCollider2D ground))
+        {
+
+            _CurrentJumpCount = _jumpCount;
+
+
+        }
+
     }
 }
 
 
 
-//- Подпрыгивает, когда поднимается по склону
-//-Добавить фоновую музыку
-//- Доработать бой с боссом
-//- Дополнить геймплейные развилки
+//В скрипте Shop сделать так, чтобы когда игрок входит в триггер, то появлялась панелька с диалогом
+
+//Сделать так, чтобы продавец поворачивался в сторону игрока
