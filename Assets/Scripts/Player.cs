@@ -6,57 +6,52 @@ using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
+    [Header("Components")]
     [SerializeField] private Animator _animator;
     [SerializeField] private Rigidbody2D _rigidbody;
+    [SerializeField] private PhysicsMaterial2D _physicsMaterial2D;
+
+    [Header("Parametrs Move")]
     [SerializeField] private float _speed;
+     
+    
+
+    [Header("Jumps")]
+    [SerializeField] private bool _dubleJump;
     [SerializeField] private float _jumpPower;
     [SerializeField] private Transform _legs;
-    [SerializeField] private Transform _rightLegsPosition;
-    [SerializeField] private Transform _leftLegsPosition;
     [SerializeField] private LayerMask _maskGround;
     [SerializeField] private float _radiusLegs;
-    [SerializeField] private PhysicsMaterial2D _physicsMaterial2D;
-    [SerializeField] private Coin _coin;
+    private bool _isJump;
+    private bool _isDJump;
+
+    [Header("Parametrs GameObjects")]
     [SerializeField] private int _score;
     [SerializeField] private TMP_Text _scoreRecord;
     [SerializeField] private CheckPoint _CheckPoint;
     [SerializeField] private int _live = 4;
     [SerializeField] private TMP_Text _liveScore;
     [SerializeField] private GameObject _endGame;
-    [SerializeField] private GameObject _endLevel;
-    [SerializeField] private bool _dubleJump;
-    [SerializeField] private int _jumpCount;
-    private int _CurrentJumpCount;
-    private bool _isShield;
+    [SerializeField] private GameObject _endLevel;     
+   
+    private bool _inEnemi;
+
+    [Header("Shield Object")]
+    [SerializeField] private GameObject _shieldObject;
     [SerializeField] private float _timer;
     private float _timeShield = 10;
-    [SerializeField] private GameObject _shieldObject;
-    private bool _inEnemi;
-    private bool _isJump;
+    private bool _isShield;
+
+
 
     public event UnityAction _isDead;
 
-    private void Awake()
-    {
-        //_physicsMaterial2D.friction = 0;
-        _CurrentJumpCount = _jumpCount;
-    }
-
-
     void Update()
     {
-        MoveSelection();
-        Jump();
+        _isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
 
-        /*if (_isJump == true)
-        {
-            _physicsMaterial2D.friction = 0;
-        }
-        else 
-        {
-            _physicsMaterial2D.friction = 1;
-        }
-        */
+        MoveSelection();
+        Jump(); 
         if(_isShield == true)
         {   
             _timer += Time.deltaTime;
@@ -64,6 +59,7 @@ public class Player : MonoBehaviour
             {
                 _isShield = false;
                 _shieldObject.SetActive(false);
+                _timer = 0;
                 if(_inEnemi == true)
                 {
                     _live -= 1;
@@ -71,11 +67,7 @@ public class Player : MonoBehaviour
                     _liveScore.text = ($"Жизни: {_live}");
                 }
             }
-        }
-      //if(_isJump == false)
-      //  {
-      //      _CurrentJumpCount = _jumpCount;
-      //  }
+        }  
     }
 
 
@@ -170,11 +162,17 @@ public class Player : MonoBehaviour
         }
         if (_dubleJump == true)
         {
-            if (Input.GetKeyDown(KeyCode.Space) && _CurrentJumpCount > 0)
+            if (Input.GetKeyDown(KeyCode.Space) && _isJump == false)
             {
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
                 _rigidbody.AddForce(Vector2.up * _jumpPower, ForceMode2D.Impulse);
-                _CurrentJumpCount -= 1;
+                _isDJump = false;
+            }
+            else if (Input.GetKeyDown(KeyCode.Space) && _isDJump == false)
+            {
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
+                _rigidbody.AddForce(Vector2.up * _jumpPower * 1.5F, ForceMode2D.Impulse);
+                _isDJump = true;
             }
         }
         _animator.SetBool("isJump", _isJump);
@@ -189,37 +187,23 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
+        //_isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
         
             
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out Coin coin))
-        {
-            _score += 10;
-            _scoreRecord.text = ($"Счет: {_score}");
+        CheckCoin(collision);
+        EnemiMove(collision);
 
-            Destroy(coin.gameObject);
-
-
-        }
-        
         if (collision.TryGetComponent(out Enemies enemies) && _live > 0 && _isShield == false)
         {
-            _rigidbody.velocity = Vector2.zero;
-            _live -= 1;
-            transform.position = _CheckPoint.transform.position;
-            _liveScore.text = ($"Жизни: {_live}");
-            _isDead?.Invoke();
+
+            LiveOut();
          
         }        
-        if(_live == 0)
-        {
-            _endGame.SetActive(true);
-            Time.timeScale = 0;
-        }
+        
         else if (_isShield == true && collision.TryGetComponent(out Enemies _enemies) && _live > 0)
         {
             _inEnemi = true;
@@ -227,16 +211,13 @@ public class Player : MonoBehaviour
         if (collision.TryGetComponent(out CheckPoint checkpoint))
         {
             _CheckPoint.GetComponent<SpriteRenderer>().color = Color.red;
-
             _CheckPoint = checkpoint;
-
             _CheckPoint.GetComponent<SpriteRenderer>().color = Color.green;
 
         }
         if (collision.TryGetComponent(out Live live))
         {
-            _live += 1;
-            _liveScore.text = ($"Жизни: {_live}");
+            LiveUp();
             Destroy(live.gameObject);
         }
         if (collision.TryGetComponent(out End end))
@@ -246,14 +227,55 @@ public class Player : MonoBehaviour
         }
         if (collision.TryGetComponent(out Shield shield))
         {
-
-            _shieldObject.SetActive(true);
-            _isShield = true;
+            Shield();
             Destroy(shield.gameObject);
-
         }
     }
 
+    private void CheckCoin(Collider2D collision)
+    {
+        if (collision.TryGetComponent(out Coin coin))
+        {
+            _score += 10;
+            _scoreRecord.text = ($"Счет: {_score}");
+
+            Destroy(coin.gameObject);
+        }
+    }
+    private void LiveUp()
+    {
+        _live += 1;
+        _liveScore.text = ($"Жизни: {_live}");
+    }
+
+    private void EnemiMove(Collider2D collision)
+    {
+        if (collision.TryGetComponent(out Enemies enemies) && _live > 0 && _isShield == false)
+        {
+            LiveOut();
+        } 
+    }
+
+    private void LiveOut()
+    {
+        _rigidbody.velocity = Vector2.zero;
+        _live -= 1;
+        transform.position = _CheckPoint.transform.position;
+        _liveScore.text = ($"Жизни: {_live}");
+        _isDead?.Invoke();
+        Shield();
+        _timer = 7;
+        if (_live == 0)
+        {
+            _endGame.SetActive(true);
+            Time.timeScale = 0;
+        }
+    }
+    private void Shield()
+    {
+        _shieldObject.SetActive(true);
+        _isShield = true;
+    }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.TryGetComponent(out Enemies enemies))
@@ -268,31 +290,19 @@ public class Player : MonoBehaviour
     {
         if (collision.collider.TryGetComponent(out Enemies enemies) && _live > 0 && _isShield == false)
         {
-
-            _live -= 1;
-            transform.position = _CheckPoint.transform.position;
-            _liveScore.text = ($"Жизни: {_live}");
-            _isDead?.Invoke();
-
-
+            LiveOut();
         }
         else if (_isShield == true && collision.collider.TryGetComponent(out Enemies _enemies) && _live > 0)
         {
             _inEnemi = true;
         }
-        if (collision.collider.TryGetComponent(out CompositeCollider2D ground))
-        {
-
-            _CurrentJumpCount = _jumpCount;
-
-
-        }
+       
 
     }
 }
 
 
 
-//В скрипте Shop сделать так, чтобы когда игрок входит в триггер, то появлялась панелька с диалогом
 
-//Сделать так, чтобы продавец поворачивался в сторону игрока
+
+//Разбить класс PLayer по методам

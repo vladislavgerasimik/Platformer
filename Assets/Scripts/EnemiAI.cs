@@ -12,12 +12,16 @@ public class EnemiAI : MonoBehaviour
     [SerializeField] private Rigidbody2D _rigidbody2D;
     [SerializeField] private SpriteRenderer _spriteRenderer;
     [SerializeField] private bool _isWork = true;
+    [SerializeField] private bool _isBoss = false;
     private Vector3 _startPosition;
 
     void OnEnable()
     {
+        if (_isBoss == true)
+        {           
+            _player._isDead += Back;
+        }
         _startPosition = transform.position;
-        _player._isDead += Back;
     }
 
     void OnDisable()

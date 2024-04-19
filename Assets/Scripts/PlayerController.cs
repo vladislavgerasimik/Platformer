@@ -66,14 +66,14 @@ public class PlayerController : MonoBehaviour
         grounded = false;
 
         Vector2 deltaPosition = Velocity * Time.deltaTime;
-        Vector2 moveAlongGround = new Vector2(groundNormal.y, -groundNormal.x);
+        Vector2 moveAlongGround = new Vector2(groundNormal.x, groundNormal.y);
         Vector2 move = moveAlongGround * deltaPosition.x;
 
         Movement(move, false);
 
-        move = Vector2.up * deltaPosition.y;
+        move = Vector2.up * deltaPosition;
 
-        Movement(move, true);    
+        Movement(move, true);
     }
 
 
@@ -140,9 +140,9 @@ public class PlayerController : MonoBehaviour
                     distance = modifiedDistance < distance ? modifiedDistance : distance;
                 }
             }
+        _rigidbody2D.position = _rigidbody2D.position + move.normalized * distance;
         }
 
-        _rigidbody2D.position = _rigidbody2D.position + move.normalized * distance;
     }
 }
 
