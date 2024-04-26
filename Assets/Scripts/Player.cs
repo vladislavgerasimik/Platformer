@@ -32,7 +32,11 @@ public class Player : MonoBehaviour
     [SerializeField] private int _live = 4;
     [SerializeField] private TMP_Text _liveScore;
     [SerializeField] private GameObject _endGame;
-    [SerializeField] private GameObject _endLevel;     
+    [SerializeField] private GameObject _endLevel;
+    [SerializeField] private Transform _leftSide;
+    [SerializeField] private Transform _rightSide;
+    [SerializeField] private Vector3 _cubeSize;
+    [SerializeField] private float _radiusCheck;
    
     private bool _inEnemi;
 
@@ -48,7 +52,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        _isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
+        //_isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
 
         MoveSelection();
         Jump(); 
@@ -88,8 +92,15 @@ public class Player : MonoBehaviour
              }
              else
              {
-                 _rigidbody.velocity = new Vector2(-_speed * 1.1f, _rigidbody.velocity.y);
-             }
+                if (Physics2D.OverlapCircle(_leftSide.position, _radiusCheck, _maskGround))
+                {
+                    _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+                }
+                else
+                {
+                    _rigidbody.velocity = new Vector2(-_speed * 1.1f, _rigidbody.velocity.y);
+                }
+            }
 
             GetComponent<SpriteRenderer>().flipX = true;
 
@@ -112,7 +123,15 @@ public class Player : MonoBehaviour
             }
             else
             {
+                if (Physics2D.OverlapCircle(_rightSide.position, _radiusCheck, _maskGround))
+                {
+                    _rigidbody.velocity = new Vector2(0, _rigidbody.velocity.y);
+                }
+                else
+                {
                 _rigidbody.velocity = new Vector2(_speed * 1.1f, _rigidbody.velocity.y);
+
+                }
             }
 
             GetComponent<SpriteRenderer>().flipX = false;
@@ -155,7 +174,7 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.Space) && _isJump == false)
             {            
-                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
+                //_rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0);
                 _rigidbody.AddForce(Vector2.up * _jumpPower, ForceMode2D.Impulse);
                 
             }
@@ -181,13 +200,16 @@ public class Player : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(0, 1, 0, 0.5f);
-
         Gizmos.DrawSphere(_legs.position, _radiusLegs);
+
+        Gizmos.color = new Color(1, 1, 0, 0.5f);
+        Gizmos.DrawSphere(_leftSide.position, _radiusCheck);
+        Gizmos.DrawSphere(_rightSide.position, _radiusCheck);
     }
 
     private void FixedUpdate()
     {
-        //_isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
+        _isJump = !Physics2D.OverlapCircle(_legs.position, _radiusLegs, _maskGround);
         
             
     }
@@ -305,4 +327,3 @@ public class Player : MonoBehaviour
 
 
 
-//Разбить класс PLayer по методам

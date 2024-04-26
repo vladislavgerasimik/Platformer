@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float MinGroundNormalY = .65f;
+    public float MinGroundNormalY = 0f;
     public float GravityModifier = 1f;
     public Vector2 Velocity;
     public LayerMask LayerMask;
@@ -49,16 +49,8 @@ public class PlayerController : MonoBehaviour
         contactFilter.useLayerMask = true;
     }
 
+
     void Update()
-    {
-       /* if (_isMovementPlatform == false)
-            targetVelocity = new Vector2(Input.GetAxis("Horizontal") * 8, 0);
-
-        if (Input.GetKey(KeyCode.Space) && grounded)
-            Velocity.y = _jumpPower;*/
-    }
-
-    void FixedUpdate()
     {
         Velocity += GravityModifier * Physics2D.gravity * Time.deltaTime;
         Velocity.x = targetVelocity.x;
